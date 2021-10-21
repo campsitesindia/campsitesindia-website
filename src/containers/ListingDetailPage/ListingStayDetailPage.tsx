@@ -1,4 +1,4 @@
-import React, {FC, Fragment, useState} from "react";
+import React, {FC, Fragment, useEffect, useState} from "react";
 import {Dialog, Transition} from "@headlessui/react";
 import {ArrowRightIcon} from "@heroicons/react/outline";
 import LocationMarker from "components/AnyReactComponent/LocationMarker";
@@ -25,10 +25,13 @@ import ModalPhotos from "./ModalPhotos";
 import BackgroundSection from "components/BackgroundSection/BackgroundSection";
 import SectionSliderNewCategories from "components/SectionSliderNewCategories/SectionSliderNewCategories";
 import SectionSubscribe2 from "components/SectionSubscribe2/SectionSubscribe2";
+import {useAppDispatch, useAppSelector} from "../../campsitesindia/config/store";
+import {getFeaturesByListing} from "../../campsitesindia/features/redux/features.reducer";
 
 export interface ListingStayDetailPageProps {
   className?: string;
   isPreviewMode?: boolean;
+  listingId?:string | number;
 }
 
 const PHOTOS: string[] = [
@@ -76,6 +79,7 @@ const Amenities_demos = [
 const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
   className = "",
   isPreviewMode,
+    listingId,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [openFocusIndex, setOpenFocusIndex] = useState(0);
@@ -83,7 +87,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
     startDate: moment(),
     endDate: moment().add(4, "days"),
   });
-
+    const dispatch = useAppDispatch();
   const [focusedInputSectionCheckDate, setFocusedInputSectionCheckDate] =
     useState<FocusedInputShape>("startDate");
   let [isOpenModalAmenities, setIsOpenModalAmenities] = useState(false);
@@ -117,7 +121,29 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
   };
 
   const handleCloseModal = () => setIsOpen(false);
+    {/*   */}
 
+    const featuresList = useAppSelector(state => state.features.entities);
+    const loading = useAppSelector(state => state.features.loading);
+    const totalItems = useAppSelector(state => state.features.totalItems);
+
+    const getAllEntities = () => {
+        dispatch(
+            getFeaturesByListing(listingId)
+        );
+    };
+
+
+
+    useEffect(() => {
+        getAllEntities();
+    }, []);
+
+
+
+
+
+    {/*  */}
   const renderSection1 = () => {
     return (
       <div className="listingSection__wrap !space-y-6">

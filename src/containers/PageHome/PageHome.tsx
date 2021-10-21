@@ -1,28 +1,30 @@
 import SectionHero from "components/SectionHero/SectionHero";
 import SectionSliderNewCategories from "components/SectionSliderNewCategories/SectionSliderNewCategories";
-import React from "react";
+import React, {useEffect} from "react";
 import SectionSubscribe2 from "components/SectionSubscribe2/SectionSubscribe2";
 import SectionGridFeaturePlaces from "./SectionGridFeaturePlaces";
-import SectionHowItWork from "components/SectionHowItWork/SectionHowItWork";
 import BackgroundSection from "components/BackgroundSection/BackgroundSection";
 import BgGlassmorphism from "components/BgGlassmorphism/BgGlassmorphism";
 import {TaxonomyType} from "data/types";
-import SectionGridAuthorBox from "components/SectionGridAuthorBox/SectionGridAuthorBox";
 import SectionGridCategoryBox from "components/SectionGridCategoryBox/SectionGridCategoryBox";
-import SectionBecomeAnAuthor from "components/SectionBecomeAnAuthor/SectionBecomeAnAuthor";
 import SectionVideos from "./SectionVideos";
 import SectionClientSay from "components/SectionClientSay/SectionClientSay";
 import {Helmet} from "react-helmet";
+import {useAppDispatch, useAppSelector} from "../../campsitesindia/config/store";
+import {getEntities} from "../../campsitesindia/location/redux/location.reducer";
+import Listing from "../../campsitesindia/listing/redux/listing";
+import ErrorBoundaryRoute from "../../shared/error/error-boundary-route";
 
+const categories:TaxonomyType[]= new Array()
 const DEMO_CATS: TaxonomyType[] = [
   {
     id: "1",
     href: "#",
-    name: "Himachal Pradesh",
+    name: "Himachal-Pradesh",
     taxonomy: "category",
     count: 270,
     thumbnail:
-      "/content/img/campsite/Himachal-Pradesh-Cover.jpeg",
+      "http://campsitesindia.in/wp-content/uploads/2021/05/himachalpradesh.jpg",
   },
   {
     id: "2",
@@ -34,7 +36,7 @@ const DEMO_CATS: TaxonomyType[] = [
       "/content/img/campsite/Uttrakhand-Cover.jpeg",
   },
   {
-    id: "2",
+    id: "3",
     href: "#",
     name: "Paris",
     taxonomy: "category",
@@ -43,7 +45,7 @@ const DEMO_CATS: TaxonomyType[] = [
       "https://images.pexels.com/photos/739407/pexels-photo-739407.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
   },
   {
-    id: "2",
+    id: "4",
     href: "#",
     name: "London",
     taxonomy: "category",
@@ -52,7 +54,7 @@ const DEMO_CATS: TaxonomyType[] = [
       "https://images.pexels.com/photos/460672/pexels-photo-460672.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260",
   },
   {
-    id: "2",
+    id: "5",
     href: "#",
     name: "Tokyo",
     taxonomy: "category",
@@ -61,7 +63,7 @@ const DEMO_CATS: TaxonomyType[] = [
       "https://images.pexels.com/photos/4151484/pexels-photo-4151484.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260",
   },
   {
-    id: "2",
+    id: "6",
     href: "#",
     name: "Maldives",
     taxonomy: "category",
@@ -119,13 +121,111 @@ const DEMO_CATS_2: TaxonomyType[] = [
   },
 ];
 
+const DEMO_CATS_3:TaxonomyType[] = [
+    {
+        id: "1",
+        href: "#",
+        name: "Camping",
+        taxonomy: "category",
+        count: 1882,
+        thumbnail:
+            "/content/img/campaign_listing.png",
+    },
+    {
+        id: "2",
+        href: "#",
+        name: "Home Stays",
+        taxonomy: "category",
+        count: 8288,
+        thumbnail:
+            "/content/img/home_stay.png",
+    },
+    {
+        id: "3",
+        href: "#",
+        name: "Road Trips",
+        taxonomy: "category",
+        count: 1288,
+        thumbnail:
+            "/content/img/roadtrip.png",
+    },
+    {
+        id: "4",
+        href: "#",
+        name: "Trekking",
+        taxonomy: "category",
+        count: 112,
+        thumbnail:
+            "/content/img/trekking.png",
+    },
+
+];
+
 function PageHome() {
-  return (
+    const dispatch = useAppDispatch();
+
+
+
+    const locationList = useAppSelector(state => state.location.entities);
+    const loading = useAppSelector(state => state.location.loading);
+    const totalItems = useAppSelector(state => state.location.totalItems);
+
+    const getAllEntities = () => {
+        dispatch(
+            getEntities({
+                page: 1 - 1,
+                size: 50,
+                sort: ``,
+            })
+        );
+
+    };
+    useEffect(() => {
+        getAllEntities()
+
+    }, []);
+
+
+
+    function objectMap(locationList) {
+
+           // console.log("inside locations:::..............."+locationList.length)
+        let cats :TaxonomyType[]=[]
+            for (let [k, v] of Object.entries(locationList)) {
+                let newObj1 = locationList[k]
+                let taxonomy:TaxonomyType= {
+                    id: k,
+                    href: "#",
+                    name: "Test"+k,
+                    taxonomy: "category",
+                    count: newObj1.count,
+                    thumbnail: "http://campsitesindia.in/wp-content/uploads/2021/05/himachalpradesh.jpg",
+
+                };
+                cats.push(taxonomy)
+              //  console.log("locations::::::" + k + taxonomy.name+"   "+cats.length)
+
+        }
+        return cats;
+
+    }
+    //
+    // {
+    //     id: "1",
+    //         href: "#",
+    //     name: "Himachal Pradesh",
+    //     taxonomy: "category",
+    //     count: 270,
+    //     thumbnail:
+    //     "http://campsitesindia.in/wp-content/uploads/2021/05/himachalpradesh.jpg",
+    // },
+
+    return (
 
     <div className="nc-PageHome relative overflow-hidden">
 
       <Helmet>
-        <title>Campsites India || Love camping and glamping? Find the Indis's best campsites</title>
+        <title>Campsites India || Love camping and glamping? Find the India's best campsites</title>
       </Helmet>
       {/* GLASSMOPHIN */}
       <BgGlassmorphism />
@@ -138,20 +238,27 @@ function PageHome() {
 
 
 
-        {/* SECTION 1 */}
-        <SectionSliderNewCategories categories={DEMO_CATS} />
+          {/* SECTION Total number of listed by category  */}
+          <SectionGridCategoryBox categories={DEMO_CATS_3} headingCenter={false} />
+
+          {/* SECTION Location listing */}
+        {/*<SectionSliderNewCategories categories={DEMO_CATS} />*/}
+          {locationList && locationList.length > 0 &&
+          <SectionSliderNewCategories categories={objectMap(locationList)}/>
+          }
 
         {/*/!* SECTION2 *!/*/}
         {/*<SectionOurFeatures />*/}
 
-        {/* SECTION */}
+        {/* SECTION Camping Listing*/}
         <div className="relative py-16">
           <BackgroundSection />
-          <SectionGridFeaturePlaces />
-        </div>
+          <SectionGridFeaturePlaces  />
+            <ErrorBoundaryRoute path={''} component={Listing} />
+                    </div>
 
         {/* SECTION */}
-        <SectionHowItWork />
+        {/*<SectionHowItWork />*/}
 
         {/* SECTION 1 */}
         <div className="relative py-16">
@@ -182,28 +289,8 @@ function PageHome() {
         {/* SECTION */}
         <SectionSubscribe2 />
 
-        {/* SECTION */}
-        <div className="relative py-16">
-          <BackgroundSection className="bg-orange-50 dark:bg-black dark:bg-opacity-20 " />
-          <SectionGridAuthorBox />
-        </div>
 
-        {/* SECTION */}
-        <SectionGridCategoryBox />
 
-        {/* SECTION */}
-        <div className="relative py-16">
-          <BackgroundSection />
-          <SectionBecomeAnAuthor />
-        </div>
-
-        {/* SECTION 1 */}
-        <SectionSliderNewCategories
-          heading="Explore by types of stays"
-          subHeading="Explore houses based on 10 types of stays"
-          categoryCardType="card5"
-          itemPerRow={5}
-        />
 
         {/* SECTION */}
         <SectionVideos />

@@ -30,7 +30,7 @@ const Logo: React.FC<LogoProps> = ({
         {/*</div>*/}
       {img ? (
         <img
-          className={'block max-h-16 ${imgLight ? "dark:hidden" : ""}'}
+          className={'block max-h-12 ${imgLight ? "dark:hidden" : ""}'}
           src={img}
           alt="Logo"
         />

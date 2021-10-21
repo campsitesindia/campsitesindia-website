@@ -42,7 +42,7 @@ const SectionGridFeaturePlaces: FC<SectionGridFeaturePlacesProps> = ({
       <div
         className={`grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ${gridClass}`}
       >
-        {DEMO_DATA.map((stay) => renderCard(stay))}
+        {stayListings.map((stay) => renderCard(stay))}
       </div>
       <div className="flex mt-16 justify-center items-center">
         <ButtonPrimary>Show me more</ButtonPrimary>

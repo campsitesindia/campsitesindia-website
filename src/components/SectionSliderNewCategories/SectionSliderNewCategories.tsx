@@ -76,7 +76,7 @@ const DEMO_CATS: TaxonomyType[] = [
   },
 ];
 
-const SectionSliderNewCategories: FC<SectionSliderNewCategoriesProps> = ({
+const    SectionSliderNewCategories: FC<SectionSliderNewCategoriesProps> = ({
   heading = "Popular Locations",
   subHeading = "Best Camping Places in India",
   className = "",
@@ -120,6 +120,7 @@ const SectionSliderNewCategories: FC<SectionSliderNewCategoriesProps> = ({
   }, []);
 
   const renderCard = (item: TaxonomyType, index: number) => {
+
     switch (categoryCardType) {
       case "card3":
         return <CardCategory3 taxonomy={item} />;
@@ -146,7 +147,9 @@ const SectionSliderNewCategories: FC<SectionSliderNewCategoriesProps> = ({
           <ul className="glide__slides">
             {categories.map((item, index) => (
               <li key={index} className={`glide__slide ${itemClassName}`}>
+
                 {renderCard(item, index)}
+
               </li>
             ))}
           </ul>

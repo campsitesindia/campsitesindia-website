@@ -17,7 +17,7 @@ export interface SectionVideosProps {
 
 const VIDEOS_DEMO: VideoType[] = [
   {
-    id: "NcRifDitRnU",
+    id: "iVGxZLYG1Fk",
     title: "Magical Scotland - 4K Scenic Relaxation Film with Calming Music",
     thumbnail:
       "https://images.pexels.com/photos/131423/pexels-photo-131423.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",

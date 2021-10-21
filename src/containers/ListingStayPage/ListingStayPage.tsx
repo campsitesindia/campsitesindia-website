@@ -19,7 +19,7 @@ const ListingStayPage: FC<ListingStayPageProps> = ({ className = "" }) => {
       data-nc-id="ListingStayPage"
     >
       <Helmet>
-        <title>Chisfis || Booking React Template</title>
+        <title>Campsites India || Campsites, Home Stays,</title>
       </Helmet>
       <BgGlassmorphism />
 

@@ -18,6 +18,20 @@ export interface TaxonomyType {
   listingType?: "stay" | "experiences" | "car";
 }
 
+//  ##########  PostDataType ######## //
+export const emptyTaxonomyType: TaxonomyType = {
+
+    id: '',
+    name: '',
+    href: '',
+    count: 0,
+    thumbnail:'',
+    desc:'',
+    color:'',
+    taxonomy: "category" ,
+    listingType: "stay"
+}
+
 export interface AuthorType {
   id: string | number;
   firstName: string;
@@ -74,7 +88,7 @@ export interface StayDataType {
   like: boolean;
   galleryImgs: string[];
   price: string;
-  listingCategory: TaxonomyType;
+  listingCategory: TaxonomyType ;
   maxGuests: number;
   bedrooms: number;
   bathrooms: number;

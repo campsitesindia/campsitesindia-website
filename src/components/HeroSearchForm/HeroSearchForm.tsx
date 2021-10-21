@@ -28,7 +28,7 @@ const HeroSearchForm: FC<HeroSearchFormProps> = ({
           return (
             <li
               onClick={() => setTabActive(tab)}
-              className={`flex items-center cursor-pointer text-sm lg:text-base font-medium ${
+              className={`flex items-center text-white cursor-pointer text-sm lg:text-base font-medium ${
                 active
                   ? ""
                   : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-100"

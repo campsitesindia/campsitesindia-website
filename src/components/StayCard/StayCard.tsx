@@ -20,7 +20,7 @@ const DEMO_DATA = DEMO_STAY_LISTINGS[0];
 const StayCard: FC<StayCardProps> = ({
   size = "default",
   className = "",
-  data = DEMO_DATA,
+  data ,
   ratioClass,
 }) => {
   const {
@@ -38,10 +38,13 @@ const StayCard: FC<StayCardProps> = ({
     reviewCount,
   } = data;
 
+
   const renderSliderGallery = () => {
     return (
-      <div className="relative w-full">
-        <GallerySlider ratioClass={ratioClass} galleryImgs={galleryImgs} />
+      <div  className="relative w-full">
+
+              <GallerySlider key={ Math.floor(Math.random() * 1000)}   ratioClass={ratioClass} galleryImgs={galleryImgs}/>
+
         <BtnLikeIcon isLiked={like} className="absolute right-3 top-3" />
         {saleOff && <SaleOffBadge className="absolute left-3 top-3" />}
       </div>
