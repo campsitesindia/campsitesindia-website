@@ -102,20 +102,24 @@ export const Listing = (props: RouteComponentProps<{ url: string }>) => {
                     photosList.push(photo.href)
                 })
 
+            let rating = 0
+            if ( newObj1.ratings!==null){
+                rating=newObj1.ratings.value;
+            }
             //photosByListing(newObj1.id).then((value) => { photos= value})
            // console.log("values listing:::..............."+listings[k].listingType)
             let stayData:StayDataType= {
                 id: newObj1.listing.id,
             author: newObj1.listing.owner,
             date: newObj1.listing.createdDate,
-            href: '',
+            href: '/listing-stay-detail/'+newObj1.listing.id,
             title: newObj1.listing.title,
             featuredImage: newObj1.listing.thumbnail,
             commentCount: 10,
             viewCount: newObj1.listing.viewCount,
             address: newObj1.listing.address,
-            reviewStart: 3,
-            reviewCount: 10,
+            reviewStart: rating,
+            reviewCount: newObj1.reviews.length,
             like: false,
             galleryImgs:photosList,
             //galleryImgs: ['https://images.pexels.com/photos/5191371/pexels-photo-5191371.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500'], // from photos API

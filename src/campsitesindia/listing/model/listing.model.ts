@@ -2,6 +2,7 @@ import {IListingType} from './listing-type.model';
 import {ILocation} from '../../location/model/location.model';
 import {IUser} from '../../user/model/user.model';
 import {IPhotos} from "../../photos/model/photos.model";
+import {IFeatures} from "../../features/model/features.model";
 
 export interface IListing {
   id?: number;
@@ -26,7 +27,8 @@ export interface IListing {
   updateDate?: string | null;
   listingType?: IListingType | null;
   location?: ILocation | null;
-  photos?: IPhotos[] | null;
+  photo?: IPhotos[] | null;
+  features?: IFeatures[] | null;
   owner?: IUser | null;
 }
 

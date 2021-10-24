@@ -26,7 +26,10 @@ import BackgroundSection from "components/BackgroundSection/BackgroundSection";
 import SectionSliderNewCategories from "components/SectionSliderNewCategories/SectionSliderNewCategories";
 import SectionSubscribe2 from "components/SectionSubscribe2/SectionSubscribe2";
 import {useAppDispatch, useAppSelector} from "../../campsitesindia/config/store";
-import {getFeaturesByListing} from "../../campsitesindia/features/redux/features.reducer";
+
+
+import {useParams} from 'react-router-dom';
+import {getEntity} from "../../campsitesindia/listing/redux/listingdetails.reducer";
 
 export interface ListingStayDetailPageProps {
   className?: string;
@@ -121,22 +124,23 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
   };
 
   const handleCloseModal = () => setIsOpen(false);
-    {/*   */}
 
-    const featuresList = useAppSelector(state => state.features.entities);
-    const loading = useAppSelector(state => state.features.loading);
-    const totalItems = useAppSelector(state => state.features.totalItems);
 
-    const getAllEntities = () => {
-        dispatch(
-            getFeaturesByListing(listingId)
-        );
-    };
+     const listingEntity = useAppSelector(state => state.listingDetails.entity);
+     const loading = useAppSelector(state => state.listing.loading);
+
+
+    const { id } = useParams<{ id: string }>();
+
 
 
 
     useEffect(() => {
-        getAllEntities();
+        dispatch(
+            getEntity(id)
+        );
+
+
     }, []);
 
 
@@ -155,7 +159,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
 
         {/* 2 */}
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold">
-          Beach House in Collingwood
+            {listingEntity.listing.title}
         </h2>
 
         {/* 3 */}
@@ -164,7 +168,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
           <span>·</span>
           <span>
             <i className="las la-map-marker-alt"></i>
-            <span className="ml-1"> Tokyo, Jappan</span>
+            <span className="ml-1"> {listingEntity.listing.address}</span>
           </span>
         </div>
 
@@ -172,9 +176,9 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
         <div className="flex items-center">
           <Avatar hasChecked sizeClass="h-10 w-10" radius="rounded-full" />
           <span className="ml-2.5 text-neutral-500 dark:text-neutral-400">
-            Hosted by{" "}
+            Hosted by {' '}{ listingEntity.listing.owner && listingEntity.listing.owner.firstName}
             <span className="text-neutral-900 dark:text-neutral-200 font-medium">
-              Kevin Francis
+                {' '}{listingEntity.listing.owner && listingEntity.listing.owner.lastName}
             </span>
           </span>
         </div>
@@ -709,12 +713,14 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
   };
 
   return (
+
     <div
       className={`nc-ListingStayDetailPage  ${className}`}
       data-nc-id="ListingStayDetailPage"
     >
       {/* SINGLE HEADER */}
       <>
+
         <header className="container 2xl:px-14 rounded-md sm:rounded-xl">
           <div className="relative grid grid-cols-3 sm:grid-cols-4 gap-1 sm:gap-2">
             <div
@@ -787,17 +793,21 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
       {/* MAIn */}
       <main className="container mt-11 flex ">
         {/* CONTENT */}
-        <div className="w-full lg:w-3/5 xl:w-2/3 space-y-8 lg:space-y-10 lg:pr-10">
-          {renderSection1()}
-          {renderSection2()}
-          {renderSection3()}
-          {renderSection4()}
-          {renderSectionCheckIndate()}
-          {renderSection5()}
-          {renderSection6()}
-          {renderSection7()}
-          {renderSection8()}
-        </div>
+          {listingEntity.listing &&
+          <div className="w-full lg:w-3/5 xl:w-2/3 space-y-8 lg:space-y-10 lg:pr-10">
+              {console.log(listingEntity)}
+              {renderSection1()}
+              {renderSection2()}
+              {renderSection3()}
+              {renderSection4()}
+              {renderSectionCheckIndate()}
+              {renderSection5()}
+              {renderSection6()}
+              {renderSection7()}
+              {renderSection8()}
+
+          </div>
+          }
 
         {/* SIDEBAR */}
         <div className="hidden lg:block flex-grow">

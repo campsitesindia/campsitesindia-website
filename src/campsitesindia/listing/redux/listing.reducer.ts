@@ -15,12 +15,13 @@ const initialState: EntityState<IListing> = {
   updateSuccess: false,
 };
 
+
+
 const apiUrl = 'api/listings';
 
 // Actions
 
 export const getEntities = createAsyncThunk('listing/fetch_entity_list', async ({ page, size, sort }: IQueryParams) => {
-  //const requestUrl = `${apiUrl}${sort ? `?page=${page}&size=${size}&sort=${sort}&` : '?'}cacheBuster=${new Date().getTime()}`;
     const requestUrl = `${'/api/listingsWithExtraInformation'}`
     const result= await axios.get<IListing[]>(requestUrl);
   return result
@@ -29,7 +30,7 @@ export const getEntities = createAsyncThunk('listing/fetch_entity_list', async (
 export const getEntity = createAsyncThunk(
   'listing/fetch_entity',
   async (id: string | number) => {
-    const requestUrl = `${apiUrl}/${id}`;
+    const requestUrl = `${apiUrl}/details/${id}`;
     return axios.get<IListing>(requestUrl);
   },
   { serializeError: serializeAxiosError }
@@ -119,7 +120,10 @@ export const ListingSlice = createEntitySlice({
   },
 });
 
+
+
 export const { reset } = ListingSlice.actions;
 
 // Reducer
 export default ListingSlice.reducer;
+
