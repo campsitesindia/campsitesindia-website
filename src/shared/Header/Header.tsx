@@ -1,11 +1,16 @@
 import React, {FC, useEffect, useState} from "react";
 import MainNav1 from "./MainNav1";
 import {Helmet} from "react-helmet";
+import {useAppSelector} from "../../campsitesindia/config/store";
 
-export interface HeaderProps {}
+export interface HeaderProps {
+    isAuthenticated: boolean;
+    isAdmin: boolean;
+}
 
-const Header: FC<HeaderProps> = () => {
+const Header: FC<HeaderProps> = (props: HeaderProps) => {
   const [isTop, setisTop] = useState(true);
+   // const isAuthenticated = useAppSelector(state => state.authentication.isAuthenticated);
 
   useEffect(() => {
     window.onscroll = function () {
@@ -36,7 +41,7 @@ const Header: FC<HeaderProps> = () => {
       </Helmet>
 
       {/* NAV */}
-      <MainNav1 isTop={isTop} />
+      <MainNav1 isTop={isTop} isAuthenticated={props.isAuthenticated} isAdmin={props.isAdmin} />
     </div>
   );
 };

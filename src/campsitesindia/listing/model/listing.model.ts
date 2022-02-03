@@ -1,8 +1,7 @@
-import {IListingType} from './listing-type.model';
-import {ILocation} from '../../location/model/location.model';
-import {IUser} from '../../user/model/user.model';
-import {IPhotos} from "../../photos/model/photos.model";
-import {IFeatures} from "../../features/model/features.model";
+import dayjs from 'dayjs';
+import { ILocation } from '../../location/model/location.model';
+import { IListingType } from '../../listing-type/model/listing-type.model';
+import { IUser } from '../../user/model/user.model';
 
 export interface IListing {
   id?: number;
@@ -15,6 +14,9 @@ export interface IListing {
   thumbnail?: string | null;
   isFeatured?: boolean | null;
   pricePerPerson?: number | null;
+  pricePerChild?: number | null;
+  discount?: number | null;
+  isPublished?: boolean | null;
   phone?: string | null;
   email?: string | null;
   website?: string | null;
@@ -25,14 +27,13 @@ export interface IListing {
   createdDate?: string | null;
   updatedBy?: string | null;
   updateDate?: string | null;
-  listingType?: IListingType | null;
   location?: ILocation | null;
-  photo?: IPhotos[] | null;
-  features?: IFeatures[] | null;
+  listingType?: IListingType | null;
   owner?: IUser | null;
 }
 
 export const defaultValue: Readonly<IListing> = {
   isFeatured: false,
+  isPublished: false,
   disableBooking: false,
 };

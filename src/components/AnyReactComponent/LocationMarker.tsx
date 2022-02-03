@@ -1,11 +1,14 @@
-import React, {FC} from "react";
+import React, {FC, useEffect} from "react";
 
 export interface LocationMarkerProps {
   lat: number;
   lng: number;
 }
 
-const LocationMarker: FC<LocationMarkerProps> = () => {
+
+const LocationMarker: FC<LocationMarkerProps> = ( ) => {
+
+
   return (
     <div className="text-primary-500">
       <svg

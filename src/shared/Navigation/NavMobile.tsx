@@ -4,11 +4,12 @@ import Logo from "shared/Logo/Logo";
 import {Disclosure} from "@headlessui/react";
 import {NavLink} from "react-router-dom";
 import {NavItemType} from "./NavigationItem";
-import {NAVIGATION_DEMO} from "data/navigation";
+import {LOGGED_IN, NAVIGATION_DEMO, NAVIGATION_HOST} from "data/navigation";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import SocialsList from "shared/SocialsList/SocialsList";
 import {ChevronDownIcon} from "@heroicons/react/solid";
 import SwitchDarkMode from "shared/SwitchDarkMode/SwitchDarkMode";
+import {useAppSelector} from "../../campsitesindia/config/store";
 
 export interface NavMobileProps {
   data?: NavItemType[];
@@ -64,6 +65,7 @@ const NavMobile: React.FC<NavMobileProps> = ({
       </ul>
     );
   };
+    const isAuthenticated = useAppSelector(state => state.authentication.isAuthenticated);
 
   const _renderItem = (item: NavItemType, index: number) => {
     return (
@@ -135,11 +137,23 @@ const NavMobile: React.FC<NavMobileProps> = ({
       <ul className="flex flex-col py-6 px-2 space-y-1">
         {data.map(_renderItem)}
       </ul>
-      <div className="flex items-center justify-between py-6 px-5 space-x-4">
-        <a href="/#" target="_blank" rel="noopener noreferrer">
-          <ButtonPrimary>Get Template</ButtonPrimary>
-        </a>
-      </div>
+        {isAuthenticated ? (
+
+            <ul className="flex flex-col py-6 px-2 space-y-1">
+                {LOGGED_IN.map(_renderItem)}
+            </ul>
+
+        ):( <ul className="flex flex-col py-6 px-2 space-y-1">
+            {NAVIGATION_HOST.map(_renderItem)}
+        </ul>)
+        }
+
+        {isAuthenticated ? ( <div className="flex items-center justify-between py-6 px-5 space-x-4">
+            <a href="/add-listing" target="_blank" rel="noopener noreferrer">
+                <ButtonPrimary>Become a Host</ButtonPrimary>
+            </a>
+        </div>):(<div/>)
+        }
     </div>
   );
 };

@@ -1,11 +1,21 @@
 import React from "react";
-import NavigationItem from "./NavigationItem";
+import NavigationItem, {NavItemType} from "./NavigationItem";
 import {NAVIGATION_DEMO} from "data/navigation";
+import {ButtonProps} from "../Button/Button";
+import {ButtonPrimaryProps} from "../Button/ButtonPrimary";
 
-function Navigation() {
+
+export interface NavigationProps {
+  navigationsItems:NavItemType[],
+    userName?:string | ''
+
+}
+const Navigation: React.FC<NavigationProps> = ({ navigationsItems
+                                                     }) => {
   return (
     <ul className="nc-Navigation hidden lg:flex lg:flex-wrap lg:items-center lg:space-x-1 relative">
-      {NAVIGATION_DEMO.map((item) => (
+
+      {navigationsItems.map((item) => (
         <NavigationItem key={item.id} menuItem={item} />
       ))}
     </ul>

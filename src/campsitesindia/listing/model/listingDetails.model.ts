@@ -6,10 +6,10 @@ import {IRating} from "../../rating/model/rating.model";
 
 export interface IListingDetails {
   listing?: IListing;
-  featureList?: IFeatures[] | null;
-  photoList?: IPhotos[] | null;
-  reviews?: IReview[]| null;
-  ratings: IRating | null;
+  featureList?: IFeatures[]
+  photoList?: IPhotos[]
+  reviews?: IReview[]
+  ratings?: IRating
 
 }
 

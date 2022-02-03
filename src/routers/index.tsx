@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {BrowserRouter, Route, Switch} from "react-router-dom";
 import {Page} from "./types";
 import ScrollToTop from "./ScrollToTop";
@@ -40,10 +40,32 @@ import PageAddListing8 from "containers/PageAddListing1/PageAddListing8";
 import PageAddListing9 from "containers/PageAddListing1/PageAddListing9";
 import PageAddListing10 from "containers/PageAddListing1/PageAddListing10";
 import PageHome2 from "containers/PageHome/PageHome2";
+import MultiStepForm from "../campsitesindia/listing/addlisting/MultiStepForm";
+import LoginModal from "../campsitesindia/login/login-modal";
+import Login from "../campsitesindia/login/login";
+import {useAppDispatch, useAppSelector} from "../campsitesindia/config/store";
+import {getSession} from "../shared/reducers/authentication";
+import {hasAnyAuthority} from "../shared/auth/private-route";
+import {AUTHORITIES} from "../campsitesindia/config/constants";
+import Logout from "../campsitesindia/login/logout";
+import Signup from "../campsitesindia/signup/Signup";
+import ErrorBoundaryRoute from "../shared/error/error-boundary-route";
+import Home from "../shared/home/home";
+import PrivateRoute from '../shared/auth/private-route';
+import Photos from "../campsitesindia/photos/redux/photos";
+import OAuth2RedirectHandler from '../utils/OAuth2RedirectHandler';
+import PhotosDetail from "../campsitesindia/photos/redux/photos-detail";
+import PhotosUpdate from "../campsitesindia/photos/redux/photos-update";
+import PhotoNew from "../campsitesindia/photos/redux/photos-new";
+import SettingsPage from "../campsitesindia/account/settings/settings";
+import UserPage from "../campsitesindia/listing/host/UserPage";
+import BookingCheckOutPage from "../campsitesindia/booking/BookingCheckOutPage";
+import PaymentDone from "../campsitesindia/booking/PaymentDone";
 
 export const pages: Page[] = [
   { path: "/", exact: true, component: PageHome },
     { path: "/home2", exact: true, component: PageHome2 },
+
 
   { path: "/#", exact: true, component: PageHome },
   { path: "/listing-stay", component: ListingStayPage },
@@ -68,7 +90,8 @@ export const pages: Page[] = [
   { path: "/listing-car-detail", component: ListingCarDetailPage },
   //
   { path: "/checkout", component: CheckOutPage },
-  { path: "/pay-done", component: PayPage },
+    { path: "/booking/checkout", component: BookingCheckOutPage },
+  { path: "/pay-done/:bookingId", component: PaymentDone },
   //
   { path: "/author", component: AuthorPage },
   { path: "/account", component: AccountPage },
@@ -79,42 +102,76 @@ export const pages: Page[] = [
   { path: "/blog", component: BlogPage },
   { path: "/blog-single", component: BlogSingle },
   //
-  { path: "/add-listing-1", component: PageAddListing1 },
+
+    // { path: "/add-listing", component: MultiStepForm },
   { path: "/add-listing-2", component: PageAddListing2 },
   { path: "/add-listing-3", component: PageAddListing3 },
   { path: "/add-listing-4", component: PageAddListing4 },
   { path: "/add-listing-5", component: PageAddListing5 },
   { path: "/add-listing-6", component: PageAddListing6 },
-  { path: "/add-listing-7", component: PageAddListing7 },
+  //{ path: "/add-listing-7", component: PageAddListing7 },
   { path: "/add-listing-8", component: PageAddListing8 },
   { path: "/add-listing-9", component: PageAddListing9 },
   { path: "/add-listing-10", component: PageAddListing10 },
+    { path: "/photos/listing/:listingId", component: Photos },
+    { path: "/photo-detail/:listingId/:id", component: PhotosDetail },
+    { path: "/photo-update/:listingId/:id", component: PhotosUpdate },
+    { path: "/addphoto/:listingId/:new", component: PhotoNew },
   //
   { path: "/contact", component: PageContact },
   { path: "/about", component: PageAbout },
-  { path: "/signup", component: PageSignUp },
-  { path: "/login", component: PageLogin },
+  { path: "/signup", component: Signup },
+  { path: "/login", component: Login },
+
   { path: "/subscription", component: PageSubcription },
+    { path: "/logout",exact: true, component: Logout },
 ];
 
 const Routes = () => {
-  return (
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        dispatch(getSession());
+        // dispatch(getProfile());
+    }, []);
+    const sessionHasBeenFetched = useAppSelector(state => state.authentication.sessionHasBeenFetched);
+
+    //const isAuthorized = hasAnyAuthority(account.authorities, hasAnyAuthorities);
+
+    const currentLocale = useAppSelector(state => state.locale.currentLocale);
+    const isAuthenticated = useAppSelector(state => state.authentication.isAuthenticated);
+    const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
+
+    return (
     <BrowserRouter>
       <ScrollToTop />
-      <Header />
+      <Header isAuthenticated={isAuthenticated} isAdmin={isAdmin} />
+
       <Switch>
         {pages.map(({ component, path, exact }) => {
           return (
+
             <Route
               key={path}
               component={component}
               exact={!!exact}
               path={path}
             />
+
+
+
           );
         })}
+          <ErrorBoundaryRoute path="/add-listing-7/" component={Photos} />
+          <PrivateRoute path="/add-listing" component={MultiStepForm} hasAnyAuthorities={[AUTHORITIES.USER]} />
+          {/*<PrivateRoute path="/add-bookings/new" component={BookingsUpdate} hasAnyAuthorities={[AUTHORITIES.USER]} />*/}
+          <PrivateRoute path="/settings" component={SettingsPage} hasAnyAuthorities={[AUTHORITIES.USER]} />
+          <PrivateRoute path="/user-page" component={UserPage} hasAnyAuthorities={[AUTHORITIES.USER]} />
+          <Route path="/oauth2/redirect" component={OAuth2RedirectHandler}></Route>
         <Route component={Page404} />
+
       </Switch>
+
       <Footer />
     </BrowserRouter>
   );

@@ -12,7 +12,7 @@ const setupAxiosInterceptors = onUnauthenticated => {
     const token = Storage.local.get('jhi-authenticationToken') || Storage.session.get('jhi-authenticationToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-    }
+    }console.log(config)
     return config;
   };
   const onResponseSuccess = response => response;

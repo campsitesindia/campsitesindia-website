@@ -22,7 +22,7 @@ const apiUrl = 'api/listings';
 // Actions
 
 export const getEntities = createAsyncThunk('listing/fetch_entity_list', async ({ page, size, sort }: IQueryParams) => {
-    const requestUrl = `${'/api/listingsWithExtraInformation'}`
+    const requestUrl = `${'/api/listings/listingsWithExtraInformation'}`
     const result= await axios.get<IListing[]>(requestUrl);
   return result
 });
@@ -39,6 +39,7 @@ export const getEntity = createAsyncThunk(
 export const createEntity = createAsyncThunk(
   'listing/create_entity',
   async (entity: IListing, thunkAPI) => {
+
     const result = await axios.post<IListing>(apiUrl, cleanEntity(entity));
     thunkAPI.dispatch(getEntities({}));
     return result;
@@ -49,6 +50,7 @@ export const createEntity = createAsyncThunk(
 export const updateEntity = createAsyncThunk(
   'listing/update_entity',
   async (entity: IListing, thunkAPI) => {
+      console.log(entity)
     const result = await axios.put<IListing>(`${apiUrl}/${entity.id}`, cleanEntity(entity));
     thunkAPI.dispatch(getEntities({}));
     return result;

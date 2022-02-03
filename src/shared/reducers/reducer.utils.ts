@@ -78,6 +78,7 @@ export interface EntityState<T> {
   updateSuccess: boolean;
 }
 
+
 /**
  * A wrapper on top of createSlice from Redux Toolkit to extract
  * common reducers and matchers used by entities

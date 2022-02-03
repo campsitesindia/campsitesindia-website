@@ -1,13 +1,47 @@
-import React, {FC} from "react";
+import React, {FC, useEffect, useState} from "react";
 import Input from "shared/Input/Input";
 import Select from "shared/Select/Select";
 import CommonLayout from "./CommonLayout";
 import FormItem from "./FormItem";
+import {useAppDispatch, useAppSelector} from "../../campsitesindia/config/store";
+import {useParams} from "react-router";
+import {getEntity} from "../../campsitesindia/listing/redux/listingdetails.reducer";
+import {IListingDetails} from "../../campsitesindia/listing/model/listingDetails.model";
+import {IListing} from "../../campsitesindia/listing/model/listing.model";
 
-export interface PageAddListing8Props {}
+export interface PageAddListing8Props {
+    listingDetails?:any;
+}
 
-const PageAddListing8: FC<PageAddListing8Props> = () => {
-  return (
+const PageAddListing8: FC<PageAddListing8Props> = ({listingDetails}) => {
+
+    const [hasPhotos,setHasPhotos] = useState(false)
+    const [hasFeatures,setHasFeatures] = useState(false)
+    const [isPublishable,setIsPublishable] = useState(false)
+
+    useEffect(() => {
+
+        const  obj=listingDetails;
+        if(obj ){
+
+            if(obj.featuresList !==undefined && obj.featuresList.length>0){
+                setHasFeatures(true)
+            }
+            if(obj.photosList!==undefined && obj.photosList.length>0)
+            {
+                setHasPhotos(true)
+            }
+
+        }
+        if(hasPhotos && hasFeatures){
+            setIsPublishable(true)
+        }
+        console.log(obj.featuresList )
+    },[listingDetails]  );
+
+
+
+    return (
     <CommonLayout
       index="08"
       backtHref="/add-listing-7"
@@ -15,60 +49,47 @@ const PageAddListing8: FC<PageAddListing8Props> = () => {
     >
       <>
         <div>
-          <h2 className="text-2xl font-semibold">Price your space</h2>
-          <span className="block mt-2 text-neutral-500 dark:text-neutral-400">
-            The host's revenue is directly dependent on the setting of rates and
-            regulations on the number of guests, the number of nights, and the
-            cancellation policy.
-          </span>
+          <h2 className="text-2xl font-semibold">Publish your place</h2>
+
         </div>
         <div className="w-14 border-b border-neutral-200 dark:border-neutral-700"></div>
         {/* FORM */}
-        <div className="space-y-8">
+        <div className="flex flex-row space-x-8">
           {/* ITEM */}
-          <FormItem label="Currency">
-            <Select>
-              <option value="USD">USD</option>
-              <option value="VND">VND</option>
-              <option value="EURRO">EURRO</option>
-            </Select>
-          </FormItem>
-          <FormItem label="Base price  (Monday -Thuday)">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span className="text-gray-500">$</span>
-              </div>
-              <Input className="!pl-8 !pr-10" placeholder="0.00" />
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <span className="text-gray-500">USD</span>
-              </div>
+
+          <div><h2>Photos</h2></div>
+            <div  >
+                <input
+                type="checkbox"
+                id="photos-check"
+                name="photosCheck"
+                checked={hasPhotos}
+               disabled={true}
+                />
+
+
             </div>
-          </FormItem>
-          {/* ----- */}
-          <FormItem label="Base price  (Friday-Sunday)">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span className="text-gray-500">$</span>
-              </div>
-              <Input className="!pl-8 !pr-10" placeholder="0.00" />
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <span className="text-gray-500">USD</span>
-              </div>
-            </div>
-          </FormItem>
-          {/* ----- */}
-          <FormItem label="Long term price (Monthly discount) ">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span className="text-gray-500">%</span>
-              </div>
-              <Input className="!pl-8 !pr-10" placeholder="0.00" />
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <span className="text-gray-500">every month</span>
-              </div>
-            </div>
-          </FormItem>
+
+
         </div>
+          <div className="flex flex-row space-x-5">
+              {/* ITEM */}
+
+              <div><h2>Features</h2></div>
+              <div  >
+                  <input
+                      type="checkbox"
+                      id="features-check"
+                      name="featuresCheck"
+                      checked={hasFeatures}
+                      disabled={true}
+                  />
+
+
+              </div>
+
+
+          </div>
       </>
     </CommonLayout>
   );

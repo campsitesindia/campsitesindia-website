@@ -2,7 +2,12 @@ import axios from 'axios';
 import {createAsyncThunk, isFulfilled, isPending} from '@reduxjs/toolkit';
 
 import {cleanEntity} from '../../util/entity-utils';
-import {createEntitySlice, EntityState, IQueryParams, serializeAxiosError} from 'shared/reducers/reducer.utils';
+import {
+    createEntitySlice,
+    EntityState,
+    IQueryParams,
+    serializeAxiosError
+} from 'shared/reducers/reducer.utils';
 import {defaultValue, IFeatures} from '../model/features.model';
 
 const initialState: EntityState<IFeatures> = {
@@ -32,12 +37,14 @@ export const getEntity = createAsyncThunk(
   },
   { serializeError: serializeAxiosError }
 );
-
-export const getFeaturesByListing = createAsyncThunk('features/fetch_entity_list',
-    async (id: string | number) => {
-    const requestUrl = `${apiUrl}/listing/${id}`;
-    return axios.get<IFeatures[]>(requestUrl);
-});
+//
+// export const getFeaturesByListing = createAsyncThunk('features/fetch_entity_list',
+//     async (id: string | number) => {
+//         console.log(id)
+//     const requestUrl = `${apiUrl}/listing/${id}`;
+//     console.log(requestUrl)
+//     return axios.get<IFeatures[]>(requestUrl);
+// });
 
 
 export const createEntity = createAsyncThunk(
@@ -111,7 +118,8 @@ export const FeaturesSlice = createEntitySlice({
         state.updateSuccess = true;
         state.entity = action.payload.data;
       })
-      .addMatcher(isPending(getEntities, getEntity,getFeaturesByListing), state => {
+
+      .addMatcher(isPending(getEntities, getEntity), state => {
         state.errorMessage = null;
         state.updateSuccess = false;
         state.loading = true;

@@ -19,8 +19,8 @@ const apiUrl = 'api/photos';
 
 // Actions
 
-export const getEntities = createAsyncThunk('photos/fetch_entity_list', async ({ page, size, sort }: IQueryParams) => {
-  const requestUrl = `${apiUrl}${sort ? `?page=${page}&size=${size}&sort=${sort}&` : '?'}cacheBuster=${new Date().getTime()}`;
+export const getEntities = createAsyncThunk('photos/fetch_entity_list', async ({query }: IQueryParams) => {
+  const requestUrl = `${apiUrl}?${query}`;
   return axios.get<IPhotos[]>(requestUrl);
 });
 
@@ -45,11 +45,13 @@ export const createEntity = createAsyncThunk(
   'photos/create_entity',
   async (entity: IPhotos, thunkAPI) => {
     const result = await axios.post<IPhotos>(apiUrl, cleanEntity(entity));
-    thunkAPI.dispatch(getEntities({}));
+   thunkAPI.dispatch(getPhotosByListing(entity.listing.id));
     return result;
   },
   { serializeError: serializeAxiosError }
 );
+
+
 
 export const updateEntity = createAsyncThunk(
   'photos/update_entity',
@@ -76,7 +78,7 @@ export const deleteEntity = createAsyncThunk(
   async (id: string | number, thunkAPI) => {
     const requestUrl = `${apiUrl}/${id}`;
     const result = await axios.delete<IPhotos>(requestUrl);
-    thunkAPI.dispatch(getEntities({}));
+       //thunkAPI.dispatch(getPhotosByListing(entity.listing.id));
     return result;
   },
   { serializeError: serializeAxiosError }
@@ -121,6 +123,7 @@ export const PhotosSlice = createEntitySlice({
         state.updateSuccess = true;
         state.entity = action.payload.data;
       })
+
       .addMatcher(isPending(getEntities, getEntity), state => {
         state.errorMessage = null;
         state.updateSuccess = false;
@@ -135,7 +138,8 @@ export const PhotosSlice = createEntitySlice({
         state.errorMessage = null;
         state.updateSuccess = false;
         state.updating = true;
-      });
+      })
+
   },
 });
 

@@ -28,8 +28,15 @@ import SectionSubscribe2 from "components/SectionSubscribe2/SectionSubscribe2";
 import {useAppDispatch, useAppSelector} from "../../campsitesindia/config/store";
 
 
-import {useParams} from 'react-router-dom';
+import {Link, Redirect, useHistory, useParams} from 'react-router-dom';
 import {getEntity} from "../../campsitesindia/listing/redux/listingdetails.reducer";
+import Listing from "../../campsitesindia/listing/redux/listing";
+import {Modal, ModalTransition, useModal} from "react-simple-hook-modal";
+
+import {IListing} from "../../campsitesindia/listing/model/listing.model";
+import BookingCheckOutPage from "../../campsitesindia/booking/BookingCheckOutPage";
+import {addToCart} from "../../campsitesindia/booking/bookingcart/bookingcart.reducer";
+import {defaultValueBookingCart, IBookingCart} from "../../campsitesindia/booking/model/bookingcart.model";
 
 export interface ListingStayDetailPageProps {
   className?: string;
@@ -86,16 +93,32 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [openFocusIndex, setOpenFocusIndex] = useState(0);
+
+  const history = useHistory();
+
+    const amount=500 ;
   const [selectedDate, setSelectedDate] = useState<DateRage>({
     startDate: moment(),
     endDate: moment().add(4, "days"),
+
   });
     const dispatch = useAppDispatch();
   const [focusedInputSectionCheckDate, setFocusedInputSectionCheckDate] =
     useState<FocusedInputShape>("startDate");
   let [isOpenModalAmenities, setIsOpenModalAmenities] = useState(false);
+    let [isOpenModalSignCheck, setIsOpenModalSignCheck] = useState(false);
+    const [total,setTotal]=useState(0)
+    const [numberOfAdults, setNumberOfAdults] = useState(0);
+    const [numberofChildren, setNumberofChildren] = useState(0);
+    const [totalAmountAdults,setTotalAmountAdults]=useState(0);
+    const [totalAmountChildren,setTotalAmountChildren]=useState(0);
+    const [totalAmount,setTotalAmount]=useState(0);
+
+
 
   const windowSize = useWindowSize();
+  let photos:any = [];
+    let features:any = [];
 
   const getDaySize = () => {
     if (windowSize.width <= 375) {
@@ -118,6 +141,14 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
     setIsOpenModalAmenities(true);
   }
 
+    function closeModalSignIn() {
+        setIsOpenModalSignCheck(false);
+    }
+
+    function openModalSignIn() {
+        setIsOpenModalSignCheck(true);
+    }
+
   const handleOpenModal = (index: number) => {
     setIsOpen(true);
     setOpenFocusIndex(index);
@@ -126,14 +157,11 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
   const handleCloseModal = () => setIsOpen(false);
 
 
-     const listingEntity = useAppSelector(state => state.listingDetails.entity);
-     const loading = useAppSelector(state => state.listing.loading);
-
+     const listingEntity = useAppSelector(state => state.listingDetails.entity) as any;
+     const loading = useAppSelector(state => state.listingDetails.loading);
+     const account = useAppSelector(state => state.authentication.account);
 
     const { id } = useParams<{ id: string }>();
-
-
-
 
     useEffect(() => {
         dispatch(
@@ -143,105 +171,160 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
 
     }, []);
 
+          if(!loading ){
+            let listingObject = listingEntity
+              if(listingObject.featuresList!=undefined){
+                  listingObject.featuresList.map(feature => {
+                      console.log(feature)
+                      features.push({name:feature.title,icon:feature.icon})
 
+                  });
+              }
+              if(listingObject.photosList!=undefined)
+
+                listingObject.photosList.map(photo => {
+                  console.log(photo)
+                  photos.push(`data:${photo.imageContentType};base64,${photo.image}`)
+                  return ({id:photo.id,
+                      dataURL:`data:${photo.imageContentType};base64,${photo.image}`
+                  });
+              });
+
+          }
+    const numberOfDays= (selectedDate.endDate.diff(selectedDate.startDate,'days'));
+
+    const eventHandler = data => {
+        setNumberOfAdults(data.guestAdults)
+        setNumberofChildren(data.guestChildren)
+        if(listingEntity.listing!=undefined && selectedDate.endDate.diff(selectedDate.startDate,'days')>0 ){
+
+            let nod=selectedDate.endDate.diff(selectedDate.startDate,'days');
+            let tAmountAdults= nod*data.guestAdults*listingEntity.listing.pricePerPerson
+            let tAmountChildren=nod*data.guestChildren*listingEntity.listing.pricePerChild
+            let tAmount= tAmountAdults+tAmountChildren
+            setTotalAmountAdults(tAmountAdults)
+            setTotalAmountChildren(tAmountChildren)
+            setTotalAmount(tAmount)
+        }
+    }
+
+
+console.log(listingEntity)
 
 
 
     {/*  */}
+    const errorBlockForSign = () =>{
+        return (
+
+            <div className="align-middle bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong className="font-bold">SignIn require :</strong>
+                <span className="block sm:inline">You are not signed In</span>
+                <span className="absolute top-0 bottom-0 right-0 px-4 py-3">
+    <svg className="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg"
+         viewBox="0 0 20 20"><title>Close</title><path
+        d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+  </span>
+            </div>
+        )
+    }
   const renderSection1 = () => {
     return (
-      <div className="listingSection__wrap !space-y-6">
-        {/* 1 */}
-        <div className="flex justify-between items-center">
-          <Badge name="Wooden house" />
-          <LikeSaveBtns />
-        </div>
+        <>
+        { listingEntity.listing===undefined ?
+                (<div>loading.....</div>)
+                :
+                (<div className="listingSection__wrap !space-y-6">
+          {/* 1 */}
+          <div className="flex justify-between items-center">
+              <Badge name="Wooden house"/>
+              <LikeSaveBtns/>
+          </div>
 
-        {/* 2 */}
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold">
-            {listingEntity.listing.title}
-        </h2>
+          {/* 2 */}
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold">
+              {listingEntity.listing.title}
 
-        {/* 3 */}
-        <div className="flex items-center space-x-4">
-          <StartRating />
-          <span>·</span>
-          <span>
+          </h2>
+
+          {/* 3 */}
+          <div className="flex items-center space-x-4">
+              <StartRating/>
+              <span>·</span>
+              <span>
             <i className="las la-map-marker-alt"></i>
             <span className="ml-1"> {listingEntity.listing.address}</span>
           </span>
-        </div>
+          </div>
 
-        {/* 4 */}
-        <div className="flex items-center">
-          <Avatar hasChecked sizeClass="h-10 w-10" radius="rounded-full" />
-          <span className="ml-2.5 text-neutral-500 dark:text-neutral-400">
-            Hosted by {' '}{ listingEntity.listing.owner && listingEntity.listing.owner.firstName}
-            <span className="text-neutral-900 dark:text-neutral-200 font-medium">
+          {/* 4 */}
+          <div className="flex items-center">
+              <Avatar hasChecked sizeClass="h-10 w-10" radius="rounded-full"/>
+              <span className="ml-2.5 text-neutral-500 dark:text-neutral-400">
+            Hosted by {' '}{listingEntity.listing.owner && listingEntity.listing.owner.firstName}
+                  <span className="text-neutral-900 dark:text-neutral-200 font-medium">
                 {' '}{listingEntity.listing.owner && listingEntity.listing.owner.lastName}
             </span>
           </span>
-        </div>
+          </div>
 
-        {/* 5 */}
-        <div className="w-full border-b border-neutral-100 dark:border-neutral-700" />
+          {/* 5 */}
+          <div className="w-full border-b border-neutral-100 dark:border-neutral-700"/>
 
-        {/* 6 */}
-        <div className="flex items-center justify-between xl:justify-start space-x-8 xl:space-x-12 text-sm text-neutral-700 dark:text-neutral-300">
-          <div className="flex items-center space-x-3 ">
-            <i className=" las la-user text-2xl "></i>
-            <span className="">
+          {/* 6 */}
+          <div
+              className="flex items-center justify-between xl:justify-start space-x-8 xl:space-x-12 text-sm text-neutral-700 dark:text-neutral-300">
+              <div className="flex items-center space-x-3 ">
+                  <i className=" las la-user text-2xl "></i>
+                  <span className="">
               6 <span className="hidden sm:inline-block">guests</span>
             </span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <i className=" las la-bed text-2xl"></i>
-            <span className=" ">
+              </div>
+              <div className="flex items-center space-x-3">
+                  <i className=" las la-bed text-2xl"></i>
+                  <span className=" ">
               6 <span className="hidden sm:inline-block">beds</span>
             </span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <i className=" las la-bath text-2xl"></i>
-            <span className=" ">
+              </div>
+              <div className="flex items-center space-x-3">
+                  <i className=" las la-bath text-2xl"></i>
+                  <span className=" ">
               3 <span className="hidden sm:inline-block">baths</span>
             </span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <i className=" las la-door-open text-2xl"></i>
-            <span className=" ">
+              </div>
+              <div className="flex items-center space-x-3">
+                  <i className=" las la-door-open text-2xl"></i>
+                  <span className=" ">
               2 <span className="hidden sm:inline-block">bedrooms</span>
             </span>
+              </div>
           </div>
-        </div>
-      </div>
+      </div>)
+          }
+        </>
     );
+
   };
 
   const renderSection2 = () => {
     return (
-      <div className="listingSection__wrap">
+        <>
+            { listingEntity.listing===undefined ?
+                (<div>loading.....</div>)
+                :
+                (<div className="listingSection__wrap">
         <h2 className="text-2xl font-semibold">Stay information</h2>
         <div className="w-14 border-b border-neutral-200 dark:border-neutral-700"></div>
         <div className="text-neutral-6000 dark:text-neutral-300">
           <span>
-            Providing lake views, The Symphony 9 Tam Coc in Ninh Binh provides
-            accommodation, an outdoor swimming pool, a bar, a shared lounge, a
-            garden and barbecue facilities. Complimentary WiFi is provided.
+              {listingEntity.listing.content}
           </span>
-          <br />
-          <br />
-          <span>
-            There is a private bathroom with bidet in all units, along with a
-            hairdryer and free toiletries.
-          </span>
-          <br /> <br />
-          <span>
-            The Symphony 9 Tam Coc offers a terrace. Both a bicycle rental
-            service and a car rental service are available at the accommodation,
-            while cycling can be enjoyed nearby.
-          </span>
+
         </div>
       </div>
+               )
+            }
+                </>
     );
   };
 
@@ -257,7 +340,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
         <div className="w-14 border-b border-neutral-200 dark:border-neutral-700"></div>
         {/* 6 */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 text-sm text-neutral-700 dark:text-neutral-300 ">
-          {Amenities_demos.filter((_, i) => i < 12).map((item) => (
+          {features.filter((_, i) => i < 12).map((item) => (
             <div key={item.name} className="flex items-center space-x-3">
               <i className={`text-3xl las ${item.icon}`}></i>
               <span className=" ">{item.name}</span>
@@ -349,8 +432,75 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
     );
   };
 
+    const renderCheckForSignInUser = () => {
+        return (
+            <Transition appear show={isOpenModalSignCheck} as={Fragment}>
+                <Dialog
+                    as="div"
+                    className="fixed inset-0 z-50 overflow-y-auto"
+                    onClose={closeModalSignIn}
+                >
+                    <div className="min-h-screen px-4 text-center">
+                        <Transition.Child
+                            as={Fragment}
+                            enter="ease-out duration-300"
+                            enterFrom="opacity-0"
+                            enterTo="opacity-100"
+                            leave="ease-in duration-200"
+                            leaveFrom="opacity-100"
+                            leaveTo="opacity-0"
+                        >
+                            <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-40" />
+                        </Transition.Child>
+
+                        {/* This element is to trick the browser into centering the modal contents. */}
+                        <span
+                            className="inline-block h-screen align-middle"
+                            aria-hidden="true"
+                        >
+              &#8203;
+            </span>
+                        <Transition.Child
+                            as={Fragment}
+                            enter="ease-out duration-300"
+                            enterFrom="opacity-0 scale-95"
+                            enterTo="opacity-100 scale-100"
+                            leave="ease-in duration-200"
+                            leaveFrom="opacity-100 scale-100"
+                            leaveTo="opacity-0 scale-95"
+                        >
+                            <div className="inline-block py-8 h-screen w-full">
+                                <div className="inline-flex flex-col w-1/2 max-w-2xl text-left align-middle transition-all transform overflow-hidden rounded-2xl bg-white dark:bg-neutral-900 dark:border dark:border-neutral-700 dark:text-neutral-100 shadow-xl h-1/2">
+                                    <div className="relative flex-shrink-0 px-6 py-4 border-b border-neutral-200 dark:border-neutral-800 text-center">
+                                        <h3
+                                            className="text-lg font-medium leading-6 text-gray-900"
+                                            id="headlessui-dialog-title-70"
+                                        >
+                                            You are not logged in
+                                        </h3>
+                                        <span className="absolute left-3 top-3">
+                      <ButtonClose onClick={closeModalSignIn} />
+                    </span>
+                                    </div>
+                                    <div className="px-8 overflow-auto text-neutral-700 dark:text-neutral-300 divide-y divide-neutral-200">
+                                        {errorBlockForSign()}
+                                    </div>
+                                </div>
+                            </div>
+                        </Transition.Child>
+                    </div>
+                </Dialog>
+            </Transition>
+        );
+    };
+
   const renderSection4 = () => {
     return (
+        <>
+            { listingEntity.listing===undefined ?
+                (<div>loading.....</div>)
+                :
+                (
       <div className="listingSection__wrap">
         {/* HEADING */}
         <div>
@@ -364,32 +514,22 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
         <div className="flow-root">
           <div className="text-sm sm:text-base text-neutral-6000 dark:text-neutral-300 -mb-4">
             <div className="p-4 bg-neutral-100 dark:bg-neutral-800 flex justify-between items-center space-x-4 rounded-lg">
-              <span>Monday - Thursday</span>
-              <span>$199</span>
+              <span>Monday - Sunday</span>
+                <span>Per Night</span>
+
             </div>
             <div className="p-4  flex justify-between items-center space-x-4 rounded-lg">
-              <span>Monday - Thursday</span>
-              <span>$199</span>
+                <span>Adult</span>
+                <span>INR {listingEntity.listing.pricePerPerson}</span>
             </div>
             <div className="p-4 bg-neutral-100 dark:bg-neutral-800 flex justify-between items-center space-x-4 rounded-lg">
-              <span>Friday - Sunday</span>
-              <span>$219</span>
-            </div>
-            <div className="p-4 flex justify-between items-center space-x-4 rounded-lg">
-              <span>Rent by month</span>
-              <span>-8.34 %</span>
-            </div>
-            <div className="p-4 bg-neutral-100 dark:bg-neutral-800 flex justify-between items-center space-x-4 rounded-lg">
-              <span>Minimum number of nights</span>
-              <span>1 night</span>
-            </div>
-            <div className="p-4 flex justify-between items-center space-x-4 rounded-lg">
-              <span>Max number of nights</span>
-              <span>90 nights</span>
+                <span>Child</span>
+                <span>INR {listingEntity.listing.pricePerChild}</span>
             </div>
           </div>
         </div>
-      </div>
+      </div>)}
+      </>
     );
   };
 
@@ -411,7 +551,9 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
             <DayPickerRangeController
               startDate={selectedDate.startDate}
               endDate={selectedDate.endDate}
-              onDatesChange={(date) => setSelectedDate(date)}
+              onDatesChange={(date) => {
+                  return setSelectedDate(date);
+              }}
               focusedInput={focusedInputSectionCheckDate}
               onFocusChange={(focusedInput) =>
                 setFocusedInputSectionCheckDate(focusedInput || "startDate")
@@ -566,14 +708,19 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
     );
   };
 
-  const renderSection7 = () => {
+  const renderSectionLocation7 = () => {
     return (
+        <>
+        { listingEntity.listing===undefined ?
+            (<div>loading.....</div>)
+            :
+            (
       <div className="listingSection__wrap">
         {/* HEADING */}
         <div>
           <h2 className="text-2xl font-semibold">Location</h2>
           <span className="block mt-2 text-neutral-500 dark:text-neutral-400">
-            San Diego, CA, United States of America (SAN-San Diego Intl.)
+              {listingEntity.listing.address}
           </span>
         </div>
         <div className="w-14 border-b border-neutral-200 dark:border-neutral-700" />
@@ -591,12 +738,18 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
                 lat: 55.9607277,
                 lng: 36.2172614,
               }}
+               center={{
+                  lat: listingEntity.listing.latitude,
+                  lng: listingEntity.listing.longitude,
+              }}
+
             >
-              <LocationMarker lat={55.9607277} lng={36.2172614} />
+              <LocationMarker lat={listingEntity.listing.latitude} lng={listingEntity.listing.longitude} />
             </GoogleMapReact>
           </div>
         </div>
-      </div>
+      </div>)}
+                </>
     );
   };
 
@@ -654,63 +807,107 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
     );
   };
 
-  const renderSidebar = () => {
-    return (
-      <div className="listingSection__wrap shadow-xl">
-        {/* PRICE */}
-        <div className="flex justify-between">
+    const renderSidebar = () => {
+        return (
+            <>
+                { listingEntity.listing===undefined ?
+                    (<div>loading.....</div>)
+                    :
+                    (
+            <div className="listingSection__wrap ">
+                {/* PRICE */}
+                <div className="flex justify-between space-x-4">
           <span className="text-3xl font-semibold">
             $119
             <span className="ml-1 text-base font-normal text-neutral-500 dark:text-neutral-400">
               /night
             </span>
           </span>
-          <StartRating />
-        </div>
+                    <StartRating />
+                </div>
 
-        {/* FORM */}
-        <form className="flex flex-col border border-neutral-200 dark:border-neutral-700 rounded-3xl ">
-          <StayDatesRangeInput
-            wrapClassName="divide-x divide-neutral-200 dark:divide-neutral-700"
-            onChange={(date) => setSelectedDate(date)}
-            numberOfMonths={1}
-            fieldClassName="p-5"
-            defaultValue={selectedDate}
-            anchorDirection={windowSize.width > 1400 ? "left" : "right"}
-          />
-          <div className="w-full border-b border-neutral-200 dark:border-neutral-700"></div>
-          <GuestsInput
-            fieldClassName="p-5"
-            defaultValue={{
-              guestAdults: 1,
-              guestChildren: 2,
-              guestInfants: 0,
-            }}
-          />
-        </form>
+                {/* FORM */}
+                <form className="flex flex-col border border-neutral-200 dark:border-neutral-700 rounded-3xl ">
+                    <StayDatesRangeInput
+                        wrapClassName="divide-x divide-neutral-200 dark:divide-neutral-700"
+                        onChange={(date) => setSelectedDate(date)}
+                        numberOfMonths={1}
+                        fieldClassName="p-5"
+                        defaultValue={selectedDate}
+                        anchorDirection={windowSize.width > 1400 ? "left" : "right"}
+                    />
+                    <div className="w-full border-b border-neutral-200 dark:border-neutral-700">
 
-        {/* SUM */}
-        <div className="flex flex-col space-y-4">
-          <div className="flex justify-between text-neutral-6000 dark:text-neutral-300">
-            <span>$119 x 3 night</span>
-            <span>$357</span>
-          </div>
-          <div className="flex justify-between text-neutral-6000 dark:text-neutral-300">
-            <span>Service charge</span>
-            <span>$0</span>
-          </div>
-          <div className="border-b border-neutral-200 dark:border-neutral-700"></div>
-          <div className="flex justify-between font-semibold">
-            <span>Total</span>
-            <span>$199</span>
-          </div>
-        </div>
+                    </div>
+                    <GuestsInput
+                        fieldClassName="p-5"
+                        defaultValue={{
+                            guestAdults: numberOfAdults,
+                            guestChildren: numberofChildren,
+                            guestInfants: 0,
+                        }}
+                        onChange={eventHandler}
+                    />
+                </form>
 
-        {/* SUBMIT */}
-        <ButtonPrimary>Reserve</ButtonPrimary>
-      </div>
-    );
-  };
+                {/* SUM */}
+                <div className="flex flex-col space-y-4">
+
+                    <div className="flex justify-between text-neutral-6000 dark:text-neutral-300">
+
+                        <span>Price for {numberOfAdults} Adults and {numberOfDays} days </span>
+                        <span>{totalAmountAdults}</span>
+                    </div>
+                    <div className="flex justify-between text-neutral-6000 dark:text-neutral-300">
+
+                        <span>Price for {numberofChildren} Children and {numberOfDays} days  </span>
+                        <span>{totalAmountChildren}</span>
+                    </div>
+                    <div className="flex justify-between text-neutral-6000 dark:text-neutral-300">
+                        <span>Service charge</span>
+                        <span>$0</span>
+                    </div>
+                    <div className="border-b border-neutral-200 dark:border-neutral-700"></div>
+                    <div className="flex justify-between font-semibold">
+                        <span>Total Amount </span>
+                        <span>{totalAmount}</span>
+                    </div>
+                </div>
+
+                {/* SUBMIT */}
+                <ButtonPrimary  onClick={() => {
+                            if(account!==undefined && account.id!=null) {
+                                let bookingForm = {
+                                 listingId : listingEntity.listing.id,
+                                 guestAdults: numberOfAdults,
+                                 guestChildren : numberofChildren,
+                                 pricePerChild : listingEntity.listing.pricePerChild,
+                                 pricePerAdult :listingEntity.listing.pricePerPerson,
+                                 discount: 0,
+                                 startDate:selectedDate.startDate.format('Do MMM , YY'),
+                                 endDate:selectedDate.endDate.format('Do MMM , YY'),
+                                 listingTile:listingEntity.listing.title,
+                                 imageSrc: photos[0],
+                                 customerId:account.id,
+                                 totalAmount:totalAmount,
+                                 totalAmountAdults: totalAmountAdults,
+                                 numberOfDays: numberOfDays,
+                                 totalAmountChildren: totalAmountChildren
+                            }
+                                    dispatch(addToCart(bookingForm))
+                                    history.push("/booking/checkout")
+
+                            }
+                            else
+                            openModalSignIn()
+
+                        }}>Reserve</ButtonPrimary>
+                {renderCheckForSignInUser()}
+            </div>)
+                }
+                </>
+        );
+    };
 
   return (
 
@@ -730,12 +927,12 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
               <NcImage
                 containerClassName="absolute inset-0"
                 className="object-cover w-full h-full rounded-md sm:rounded-xl"
-                src={PHOTOS[0]}
+                src={photos[0]}
                 prevImageHorizontal
               />
               <div className="absolute inset-0 bg-neutral-900 bg-opacity-20 opacity-0 hover:opacity-100 transition-opacity"></div>
             </div>
-            {PHOTOS.filter((_, i) => i >= 1 && i < 5).map((item, index) => (
+            {photos.filter((_, i) => i >= 1 && i < 5).map((item, index) => (
               <div
                 key={index}
                 className={`relative rounded-md sm:rounded-xl overflow-hidden ${
@@ -783,7 +980,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
         </header>
         {/* MODAL PHOTOS */}
         <ModalPhotos
-          imgs={PHOTOS}
+          imgs={photos}
           isOpen={isOpen}
           onClose={handleCloseModal}
           initFocus={openFocusIndex}
@@ -793,7 +990,7 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
       {/* MAIn */}
       <main className="container mt-11 flex ">
         {/* CONTENT */}
-          {listingEntity.listing &&
+          {/*{listingEntity.listing &&*/}
           <div className="w-full lg:w-3/5 xl:w-2/3 space-y-8 lg:space-y-10 lg:pr-10">
               {console.log(listingEntity)}
               {renderSection1()}
@@ -803,11 +1000,11 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
               {renderSectionCheckIndate()}
               {renderSection5()}
               {renderSection6()}
-              {renderSection7()}
+              {renderSectionLocation7()}
               {renderSection8()}
 
           </div>
-          }
+          {/*}*/}
 
         {/* SIDEBAR */}
         <div className="hidden lg:block flex-grow">
@@ -826,7 +1023,25 @@ const ListingStayDetailPage: FC<ListingStayDetailPageProps> = ({
               </span>
             </span>
 
-            <ButtonPrimary href="##">Reserve</ButtonPrimary>
+              <ButtonPrimary  onClick={() => {
+                  if(account!==undefined && account.id!=null) {
+                      history.push("/booking/checkout",
+                            {
+                              className:"",
+                              bookingDates: "ff",
+                              numberOfDays: 0,
+                              adults: 0,
+                              child: 0,
+                              listing: listingEntity.listing,
+                              photosSrc: photos[0]
+                      })
+
+                  }
+                  else
+                      openModalSignIn()
+
+              }}>Reserve</ButtonPrimary>
+              {renderCheckForSignInUser()}
           </div>
         </div>
       )}

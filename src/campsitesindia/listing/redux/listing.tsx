@@ -99,7 +99,8 @@ export const Listing = (props: RouteComponentProps<{ url: string }>) => {
 
                 newObj1.photosList.map((photo) => {
                     console.log(photo)
-                    photosList.push(photo.href)
+                    let imageSource ='data:'+photo.imageContentType+';base64,'+photo.image
+                    photosList.push(imageSource)
                 })
 
             let rating = 0

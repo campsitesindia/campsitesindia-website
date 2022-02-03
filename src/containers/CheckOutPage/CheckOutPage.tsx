@@ -1,6 +1,6 @@
 import {Tab} from "@headlessui/react";
 import {PencilAltIcon} from "@heroicons/react/outline";
-import React, {FC, Fragment} from "react";
+import React, {FC, Fragment, useEffect} from "react";
 import visaPng from "images/vis.png";
 import mastercardPng from "images/mastercard.svg";
 import Input from "shared/Input/Input";
@@ -10,12 +10,31 @@ import ButtonPrimary from "shared/Button/ButtonPrimary";
 import NcImage from "shared/NcImage/NcImage";
 import StartRating from "components/StartRating/StartRating";
 import NcModal from "shared/NcModal/NcModal";
+import displayRazorpay from "../../campsitesindia/util/PaymentGateway";
 
 export interface CheckOutPageProps {
   className?: string;
 }
 
 const CheckOutPage: FC<CheckOutPageProps> = ({ className = "" }) => {
+
+    const loadScript = (src) => {
+        return new Promise((resolve) => {
+            const script = document.createElement("script");
+            script.src = src;
+            script.onload = () => {
+                resolve(true);
+            };
+            script.onerror = () => {
+                resolve(false);
+            };
+            document.body.appendChild(script);
+        });
+    };
+
+    useEffect(() => {
+        loadScript("https://checkout.razorpay.com/v1/checkout.js");
+    });
   const renderSidebar = () => {
     return (
       <div className="w-full flex flex-col sm:rounded-2xl sm:border border-neutral-200 dark:border-neutral-700 space-y-6 sm:space-y-8 px-0 sm:p-6 xl:p-8">
@@ -111,6 +130,7 @@ const CheckOutPage: FC<CheckOutPageProps> = ({ className = "" }) => {
               <Tab.List className="flex">
                 <Tab as={Fragment}>
                   {({ selected }) => (
+                      <>
                     <button
                       className={`px-4 py-1.5 sm:px-6 sm:py-2.5 rounded-full focus:outline-none ${
                         selected
@@ -120,7 +140,16 @@ const CheckOutPage: FC<CheckOutPageProps> = ({ className = "" }) => {
                     >
                       Paypal
                     </button>
+                      <button
+                      type="button"
+                      onClick={displayRazorpay}
+                      className="course-payment-button"
+                      >
+                      Buy Now
+                      </button>
+                      </>
                   )}
+
                 </Tab>
                 <Tab as={Fragment}>
                   {({ selected }) => (

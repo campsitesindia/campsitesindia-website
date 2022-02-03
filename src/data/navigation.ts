@@ -166,13 +166,13 @@ const templatesChildrenMenus: NavItemType[] = [
 ];
 
 export const NAVIGATION_DEMO: NavItemType[] = [
-  {
-    id: ncNanoId(),
-    href: "/",
-    name: "Home",
-    // type: "dropdown",
-    // children: demoChildMenus,
-  },
+  // {
+  //   id: ncNanoId(),
+  //   href: "/",
+  //   name: "Home",
+  //   // type: "dropdown",
+  //   // children: demoChildMenus,
+  // },
   {
     id: ncNanoId(),
     href: "#",
@@ -228,3 +228,70 @@ export const NAVIGATION_DEMO: NavItemType[] = [
   },
 
 ];
+
+const HOST_CHILD: NavItemType[] = [
+
+    {
+        id: ncNanoId(),
+        href: "/login",
+        name: "Login",
+    },
+    {
+        id: ncNanoId(),
+        href: "/signup",
+        name: "Signup",
+    },
+    {
+        id: ncNanoId(),
+        href: "/subscription",
+        name: "Becoming A Host",
+    },
+    {
+        id: ncNanoId(),
+        href: "/subscription",
+        name: "Help",
+    },
+];
+export const NAVIGATION_HOST: NavItemType[] = [
+    {
+        id: ncNanoId(),
+        href: "#",
+        name: "Host your Property",
+        type: "dropdown",
+        children: HOST_CHILD,
+    },
+];
+
+const LOGGED_IN_CHILD: NavItemType[] = [
+
+    {
+        id: ncNanoId(),
+        href: "/logout",
+        name: "Sign Out",
+    },
+    {
+        id: ncNanoId(),
+        href: "/",
+        name: "My Dashboard",
+    },
+    {
+        id: ncNanoId(),
+        href: "/subscription",
+        name: "Becoming A Host",
+    },
+    {
+        id: ncNanoId(),
+        href: "/subscription",
+        name: "Help",
+    },
+];
+export const LOGGED_IN: NavItemType[] = [
+    {
+        id: ncNanoId(),
+        href: "#",
+        name: "My Account",
+        type: "dropdown",
+        children: LOGGED_IN_CHILD,
+    },
+];
+

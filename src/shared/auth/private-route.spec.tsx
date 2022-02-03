@@ -10,7 +10,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import {Provider} from 'react-redux';
 
-import {AUTHORITIES} from 'config/constants';
+import {AUTHORITIES} from '../../campsitesindia/config/constants';
 import {hasAnyAuthority, PrivateRouteComponent} from './private-route';
 
 const TestComp = () => <div>Test</div>;

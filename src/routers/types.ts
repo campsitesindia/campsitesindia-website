@@ -6,6 +6,7 @@ export interface LocationStates {
   "/#"?: {};
   //
   "/listing-stay"?: {};
+
   "/listing-stay-map"?: {};
   "/listing-stay-detail/:id"?: {};
   //
@@ -18,7 +19,7 @@ export interface LocationStates {
   "/listing-car-detail"?: {};
   //
   "/checkout"?: {};
-  "/pay-done"?: {};
+  "/pay-done/:bookingId"?: {};
   //
   "/account"?: {};
   "/account-savelists"?: {};
@@ -29,6 +30,7 @@ export interface LocationStates {
   "/blog-single"?: {};
   //
   "/add-listing-1"?: {};
+    "/add-listing"?: {};
   "/add-listing-2"?: {};
   "/add-listing-3"?: {};
   "/add-listing-4"?: {};
@@ -48,6 +50,12 @@ export interface LocationStates {
   "/forgot-pass"?: {};
   "/page404"?: {};
   "/subscription"?: {};
+    "/logout"?: {};
+    "/photos/listing/:listingId"?: {};
+    "/photo-detail/:listingId/:id"?: {};
+    "/photo-update/:listingId/:id"?:{};
+    "/addphoto/:listingId/:new"?:{};
+    "/booking/checkout"?:{}
 }
 
 export type PathName = keyof LocationStates;

@@ -36,7 +36,10 @@ export const getSession = (): AppThunk => async (dispatch, getState) => {
   }
 };
 
-export const getAccount = createAsyncThunk('authentication/get_account', async () => axios.get<any>('api/account'), {
+export const getAccount = createAsyncThunk('authentication/get_account',
+    async () => {
+        return axios.get<any>('api/account');
+    }, {
   serializeError: serializeAxiosError,
 });
 
@@ -67,9 +70,12 @@ export const login: (username: string, password: string, rememberMe?: boolean) =
       } else {
         Storage.session.set(AUTH_TOKEN_KEY, jwt);
       }
+
     }
     dispatch(getSession());
   };
+
+
 
 export const clearAuthToken = () => {
   if (Storage.local.get(AUTH_TOKEN_KEY)) {
